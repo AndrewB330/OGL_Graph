@@ -1,0 +1,44 @@
+{
+  "uniforms": [
+    {
+      "type": "vec3",
+      "name": "offset"
+    },
+    {
+      "type": "int",
+      "name": "iterations"
+    }
+  ],
+  "framebuffers": [
+    {
+      "name": "intermediate",
+      "depth": true,
+      "textures": [
+        {
+          "name": "color",
+          "format": "RGBA"
+        }
+      ]
+    }
+  ],
+  "subprograms": [
+    {
+      "name": "post_processing",
+      "vert_path": "vert_post.glsl",
+      "frag_path": "frag_post.glsl",
+      "use_depth": true,
+      "outputs": [
+        "SCREEN"
+      ],
+      "fb_inputs": [
+      ],
+      "inputs": [
+        {
+          "name": "iterations",
+          "value" : "iterations"
+        }
+      ],
+      "execute_before": []
+    }
+  ]
+}

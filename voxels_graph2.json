@@ -1,0 +1,85 @@
+{
+  "uniforms": [
+    {
+      "type": "int",
+      "name": "palette"
+    },
+    {
+      "type": "int",
+      "name": "blue_noise"
+    },
+    {
+      "type": "int",
+      "name": "tick"
+    }
+  ],
+  "framebuffers": [
+    {
+      "name": "main",
+      "depth": true,
+      "textures": [
+        {
+          "name": "color",
+          "format": "RGBA"
+        },
+        {
+          "name": "shadow",
+          "format": "RGBA"
+        },
+        {
+          "name": "normal",
+          "format": "RGBA32F"
+        }
+      ]
+    }
+  ],
+  "subprograms": [
+    {
+      "name": "ray_tracing",
+      "vert_path": "vert_rt.glsl",
+      "frag_path": "frag_rt.glsl",
+      "use_depth": true,
+      "outputs": [
+        "main/color",
+        "main/shadow",
+        "main/normal"
+      ],
+      "fb_inputs": [
+      ],
+      "inputs": [
+        {
+          "name": "tick",
+          "value": "tick"
+        },
+        {
+          "name": "blue_noise",
+          "value": "blue_noise"
+        },
+        {
+          "name": "palette",
+          "value": "palette",
+          "TODO": "add model_view_matrix_inv"
+        }
+      ],
+      "execute_before": []
+    },
+    {
+      "name": "post_processing",
+      "vert_path": "vert_post.glsl",
+      "frag_path": "frag_post.glsl",
+      "use_depth": false,
+      "outputs": [
+        "SCREEN"
+      ],
+      "fb_inputs": [
+        {
+          "name": "color",
+          "value": "main/color"
+        }
+      ],
+      "inputs": [
+      ],
+      "execute_before": []
+    }
+  ]
+}
