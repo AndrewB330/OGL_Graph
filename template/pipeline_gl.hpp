@@ -9,6 +9,7 @@
 
 #include <GL/glew.h>
 
+#include <math/vec3i.hpp>
 #include <math/mat4.hpp>
 #include <math/quat.hpp>
 

@@ -29,13 +29,13 @@ class UInput(Input):
         if self.type == 'int[]':
             return 'std::vector<int>'
         if self.type == 'int3[]':
-            return 'std::vector<std::tuple<int,int,int>>'
+            return 'std::vector<Vec3i>'
         if self.type == 'float':
             return 'float'
         if self.type == 'vec3':
             return 'Vec3'
         if self.type == 'int3':
-            return 'std::tuple<int,int,int>'
+            return 'Vec3i'
         if self.type == 'mat3':
             return 'Mat3'
         if self.type == 'mat4':
@@ -237,15 +237,14 @@ class Pipeline:
                         gen_cpp += f'{{for (int i = 0; i < value.size(); i++) ' \
                                    f'glUniform1i({inp.get_id(p.name)} + i, value[i]);}}'
                     elif inp.type == 'int3[]':
-                        gen_cpp += f'{{for (int i = 0; i < value.size(); i++) {{ auto [x,y,z] = value[i];' \
-                                   f'glUniform3i({inp.get_id(p.name)} + i, x, y, z);}}}}'
+                        gen_cpp += f'{{for (int i = 0; i < value.size(); i++)' \
+                                   f'glUniform3i({inp.get_id(p.name)} + i, value[i].x, value[i].y, value[i].z);}}'
                     elif inp.type == 'float':
                         gen_cpp += f'{{glUniform1f({inp.get_id(p.name)}, value);}}\n'
                     elif inp.type == 'vec3':
                         gen_cpp += f'{{glUniform3f({inp.get_id(p.name)}, value.x, value.y, value.z);}}\n'
                     elif inp.type == 'int3':
-                        gen_cpp += f'{{auto [x,y,z] = value;'
-                        gen_cpp += f'glUniform3i({inp.get_id(p.name)}, x, y, z);}}\n'
+                        gen_cpp += f'{{glUniform3i({inp.get_id(p.name)}, value.x, value.y, value.z);}}\n'
                     elif inp.type == 'mat3':
                         gen_cpp += f'{{UniformMat3({inp.get_id(p.name)}, value);}}\n'
                     elif inp.type == 'mat4':
@@ -341,8 +340,10 @@ def parse(path):
         pipeline.validate()
 
         h, s = pipeline.generate_cpp_class()
-        open(r'D:\Dev\Cpp\Physics3D\preview\src\pipeline_gl\pipeline_gl.hpp', 'w').write(h)
-        open(r'D:\Dev\Cpp\Physics3D\preview\src\pipeline_gl\pipeline_gl.cpp', 'w').write(s)
+        project_folder = r'D:\Dev\Cpp\Physics3D'
+        s = s.replace('/*PROJECT_PATH*/', project_folder.replace('\\', '\\\\'))
+        open(project_folder + r'\preview\src\pipeline_gl\pipeline_gl.hpp', 'w').write(h)
+        open(project_folder + r'\preview\src\pipeline_gl\pipeline_gl.cpp', 'w').write(s)
 
 
 if __name__ == '__main__':
