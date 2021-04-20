@@ -70,12 +70,6 @@ private:
 
     void UniformMat4(GLint location, const Mat4 & mat);
 
-    void UniformProjection(GLint location);
-
-    void UniformModelView(GLint location);
-
-    void UniformCameraTranslation(GLint location);
-
     int current_width;
     int current_height;
 

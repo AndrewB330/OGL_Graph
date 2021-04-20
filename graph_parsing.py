@@ -7,7 +7,7 @@ source_template = open('template/pipeline_gl.cpp', 'r').read()
 
 
 def to_camel_case(snake_str):
-    return ''.join(x[0].upper() + x[1:] for x in snake_str.split('_'))
+    return ''.join(x[0].upper() + x[1:] for x in snake_str.replace('.', '_').split('_'))
 
 
 class Input:
@@ -21,7 +21,7 @@ class UInput(Input):
         self.type = type_
 
     def get_id(self, program_name):
-        return f'{program_name}_{self.name}_inp'
+        return f'{program_name}_{self.name.replace(".", "_")}_inp'
 
     def get_cpp_type(self):
         if self.type == 'int':
@@ -219,17 +219,17 @@ class Pipeline:
             for inp in p.inputs:
                 if len(inp.type) > 8:
                     # SPECIAL TYPES
-                    gen_hpp += f'\tvoid UpdateUniform{to_camel_case(p.name)}{to_camel_case(inp.name)}();\n'
-                    gen_cpp += f'void Pipeline::UpdateUniform{to_camel_case(p.name)}{to_camel_case(inp.name)}()'
+                    gen_hpp += f'\tvoid Set{to_camel_case(p.name)}{to_camel_case(inp.name)}();\n'
+                    gen_cpp += f'void Pipeline::Set{to_camel_case(p.name)}{to_camel_case(inp.name)}()'
                     if inp.type == 'GL_PROJECTION_MATRIX':
                         gen_cpp += f'{{ UniformProjection({inp.get_id(p.name)}); }}\n'
                     elif inp.type == 'GL_MODELVIEW_MATRIX':
                         gen_cpp += f'{{ UniformModelView({inp.get_id(p.name)}); }}\n'
                 else:
                     # STANDARD TYPES
-                    gen_hpp += f'\tvoid UpdateUniform{to_camel_case(p.name)}{to_camel_case(inp.name)}' \
+                    gen_hpp += f'\tvoid Set{to_camel_case(p.name)}{to_camel_case(inp.name)}' \
                                f'(const {inp.get_cpp_type()} & value);\n'
-                    gen_cpp += f'void Pipeline::UpdateUniform{to_camel_case(p.name)}{to_camel_case(inp.name)}' \
+                    gen_cpp += f'void Pipeline::Set{to_camel_case(p.name)}{to_camel_case(inp.name)}' \
                                f'(const {inp.get_cpp_type()} & value)'
                     if inp.type == 'int':
                         gen_cpp += f'{{ glUniform1i({inp.get_id(p.name)}, value);}}\n'

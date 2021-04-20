@@ -18,32 +18,58 @@
       ],
       "inputs": [
         {
-          "name": "projectionMat_u",
-          "type": "GL_PROJECTION_MATRIX"
+          "name": "dataTexture",
+          "type": "int"
         },
+
         {
-          "name": "modelViewMat_u",
-          "type": "GL_MODELVIEW_MATRIX"
-        },
-        {
-          "name": "gridDims_u",
+          "name": "currentObject.dims",
           "type": "int3"
         },
         {
-          "name": "voxels_u",
+          "name": "currentObject.maxLod",
           "type": "int"
         },
         {
-          "name": "maxLod_u",
-          "type": "int"
-        },
-        {
-          "name": "voxelSize_u",
+          "name": "currentObject.voxelSize",
           "type": "float"
         },
         {
-          "name": "textureOffsets_u",
+          "name": "currentObject.lodOffsets",
           "type": "int3[]"
+        },
+        {
+          "name": "currentObject.dataOffset",
+          "type": "int3"
+        },
+        {
+          "name": "currentObject.transform",
+          "type": "mat4"
+        },
+
+        {
+          "name": "globalShadow.dims",
+          "type": "int3"
+        },
+        {
+          "name": "globalShadow.maxLod",
+          "type": "int"
+        },
+        {
+          "name": "globalShadow.voxelSize",
+          "type": "float"
+        },
+        {
+          "name": "globalShadow.lodOffsets",
+          "type": "int3[]"
+        },
+        {
+          "name": "globalShadow.transformInv",
+          "type": "mat4"
+        },
+        {
+          "name": "index",
+          "type": "int"
         }
       ],
       "execute_before": []

@@ -96,20 +96,3 @@ void Pipeline::UniformMat4(GLint location, const Mat4 &mat) {
     for(int i = 0; i < 16; i++) data[i] = *(*mat.val + i);
     glUniformMatrix4fv(location, 1, GL_TRUE, data);
 }
-
-void Pipeline::UniformProjection(GLint location) {
-    GLfloat data[16];
-    glGetFloatv(GL_PROJECTION_MATRIX, data);
-    glUniformMatrix4fv(location, 1, GL_FALSE, data);
-}
-
-void Pipeline::UniformModelView(GLint location) {
-    GLfloat data[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, data);
-    glUniformMatrix4fv(location, 1, GL_FALSE, data);
-}
-
-void Pipeline::UniformCameraTranslation(GLint location) {
-    Vec3 v = camera_translation.Get();
-    glUniform3f(location, v.x, v.y, v.z);
-}
