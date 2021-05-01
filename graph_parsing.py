@@ -29,17 +29,17 @@ class UInput(Input):
         if self.type == 'int[]':
             return 'std::vector<int>'
         if self.type == 'int3[]':
-            return 'std::vector<Vec3i>'
+            return 'std::vector<glm::ivec3>'
         if self.type == 'float':
             return 'float'
         if self.type == 'vec3':
-            return 'Vec3'
+            return 'glm::dvec3'
         if self.type == 'int3':
-            return 'Vec3i'
+            return 'glm::ivec3'
         if self.type == 'mat3':
-            return 'Mat3'
+            return 'glm::dmat3'
         if self.type == 'mat4':
-            return 'Mat4'
+            return 'glm::dmat4'
         return 'void'
 
 
@@ -169,7 +169,7 @@ class Pipeline:
 
         for inp in p.inputs + p.fb_inputs:
             gen += f'\t{inp.get_id(p.name)} = ' \
-                   f'glGetUniformLocation({p.get_id()}, "{inp.name + ("[0]" if "[]" in inp.type else "")}");\n'
+                   f'glGetUniformLocation({p.get_id()}, "{inp.name + ("[0]" if hasattr(inp, "type") and "[]" in inp.type else "")}");\n'
             gen += f'\tif ({inp.get_id(p.name)} == -1) \n' + \
                    f'\t\tLogger::LogError("Uniform location \\"{inp.name}\\" not found");\n\n'
 
@@ -179,7 +179,7 @@ class Pipeline:
         gen = ''
         if p.frame_buffer == 'SCREEN':
             gen += '\tglBindFramebuffer(GL_FRAMEBUFFER, 0);\n'
-            gen += f'\tglDrawBuffer(GL_COLOR_ATTACHMENT0);\n'
+            # gen += f'\tglDrawBuffer(GL_COLOR_ATTACHMENT0);\n'
             gen += '\tglClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);\n'
         else:
             fb = self.framebuffers[p.frame_buffer]
@@ -238,7 +238,7 @@ class Pipeline:
                                    f'glUniform1i({inp.get_id(p.name)} + i, value[i]);}}'
                     elif inp.type == 'int3[]':
                         gen_cpp += f'{{for (int i = 0; i < value.size(); i++)' \
-                                   f'glUniform3i({inp.get_id(p.name)} + i, value[i].x, value[i].y, value[i].z);}}'
+                                   f'glUniform3i({inp.get_id(p.name)} + i, value[i].x, value[i].y, value[i].z);}}\n'
                     elif inp.type == 'float':
                         gen_cpp += f'{{glUniform1f({inp.get_id(p.name)}, value);}}\n'
                     elif inp.type == 'vec3':
@@ -292,14 +292,15 @@ class Pipeline:
         redraw += '\tglLoadIdentity();\n'
         r = 'camera_rotation.Get()'
         t = 'camera_translation.Get()'
-        angle = f'acos(std::min(std::max(-1.0, {r}.s), 1.0)) * 2 / PI * 180'
+        angle = f'acos(std::min(std::max(-1.0, {r}.w), 1.0)) * 2 / M_PI * 180'
         redraw += f'\tglRotatef(180, 0, 1, 0);\n'
-        redraw += f'\tglRotatef(-{angle}, {r}.v.x, {r}.v.y, {r}.v.z);\n'
+        redraw += f'\tglRotatef(-{angle}, {r}.x, {r}.y, {r}.z);\n'
         redraw += f'\tglTranslatef(-{t}.x, -{t}.y, -{t}.z);\n'
 
         for p in self.subprograms:
             redraw += self.generate_redraw_step(p)
         redraw += '\tglUseProgram(0);\n'
+        redraw += '\tglActiveTexture(GL_TEXTURE0);\n'
 
         uniforms_hpp, uniforms_cpp = self.generate_set_uniform()
 
@@ -340,10 +341,10 @@ def parse(path):
         pipeline.validate()
 
         h, s = pipeline.generate_cpp_class()
-        project_folder = r'D:\Dev\Cpp\Physics3D'
+        project_folder = r'D:\Dev\Cpp\LiteEngine.VoxelWorld'
         s = s.replace('/*PROJECT_PATH*/', project_folder.replace('\\', '\\\\'))
-        open(project_folder + r'\preview\src\pipeline_gl\pipeline_gl.hpp', 'w').write(h)
-        open(project_folder + r'\preview\src\pipeline_gl\pipeline_gl.cpp', 'w').write(s)
+        open(project_folder + r'\src\pipeline_gl\pipeline_gl.hpp', 'w').write(h)
+        open(project_folder + r'\src\pipeline_gl\pipeline_gl.cpp', 'w').write(s)
 
 
 if __name__ == '__main__':

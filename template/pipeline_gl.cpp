@@ -3,6 +3,11 @@
  */
 #include "pipeline_gl.hpp"
 
+#include <common/logging.hpp>
+
+using namespace lit::voxels;
+using LiteEngine::Common::Logger;
+
 void Pipeline::Init(int width, int height) {
     current_width = std::min(std::max(width, 128), 4096);
     current_height = std::min(std::max(height, 128), 4096);
@@ -34,7 +39,7 @@ void Pipeline::UpdateProjectionMatrix() {
     glViewport(0, 0, current_width, current_height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    double h = tan(FOV / 360 * PI) * Z_NEAR;
+    double h = tan(FOV / 360 * M_PI) * Z_NEAR;
     double w = h * (current_width * 1.0 / current_height);
     glFrustum(-w, w, -h, h, Z_NEAR, Z_FAR);
 }
@@ -57,7 +62,7 @@ void Pipeline::DestroyFrameBuffers() {
 }
 
 void Pipeline::CompileAndAttachShader(GLuint program, std::string path, GLenum type) {
-    std::ifstream fin(("D:\\Dev\\Cpp\\Physics3D\\preview\\shaders\\" + path).c_str());
+    std::ifstream fin(("D:\\Dev\\Cpp\\LiteEngine.VoxelWorld\\shaders\\" + path).c_str());
     std::stringstream ss;
     ss << fin.rdbuf();
     std::string code_str = ss.str();
@@ -77,22 +82,22 @@ void Pipeline::CompileAndAttachShader(GLuint program, std::string path, GLenum t
 }
 
 
-ValueHolder<Vec3> Pipeline::CameraTranslation() {
+ValueHolder<glm::dvec3> Pipeline::CameraTranslation() {
     return camera_translation;
 }
 
-ValueHolder<Quat> Pipeline::CameraRotation() {
+ValueHolder<glm::dquat> Pipeline::CameraRotation() {
     return camera_rotation;
 }
 
-void Pipeline::UniformMat3(GLint location, const Mat3 &mat) {
+void Pipeline::UniformMat3(GLint location, const glm::dmat3 &mat) {
     float data[9];
-    for(int i = 0; i < 9; i++) data[i] = *(*mat.val + i);
-    glUniformMatrix3fv(location, 1, GL_TRUE, data);
+    for(int i = 0; i < 9; i++) data[i] = mat[i / 3][i % 3];
+    glUniformMatrix3fv(location, 1, GL_FALSE, data);
 }
 
-void Pipeline::UniformMat4(GLint location, const Mat4 &mat) {
+void Pipeline::UniformMat4(GLint location, const glm::dmat4 &mat) {
     float data[16];
-    for(int i = 0; i < 16; i++) data[i] = *(*mat.val + i);
-    glUniformMatrix4fv(location, 1, GL_TRUE, data);
+    for(int i = 0; i < 16; i++) data[i] = mat[i / 4][i % 4];
+    glUniformMatrix4fv(location, 1, GL_FALSE, data);
 }

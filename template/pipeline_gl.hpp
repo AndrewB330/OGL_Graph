@@ -9,11 +9,10 @@
 
 #include <GL/glew.h>
 
-#include <math/vec3i.hpp>
-#include <math/mat4.hpp>
-#include <math/quat.hpp>
+#include <glm/vec3.hpp>
+#include <glm/gtx/quaternion.hpp>
 
-#include <common/logging.hpp>
+namespace lit::voxels {
 
 template<typename T>
 class ValueHolder {
@@ -46,9 +45,9 @@ public:
 
     void Redraw();
 
-    ValueHolder<Vec3> CameraTranslation();
+    ValueHolder<glm::dvec3> CameraTranslation();
 
-    ValueHolder<Quat> CameraRotation();
+    ValueHolder<glm::dquat> CameraRotation();
 
 /*BIND_QUEUE*/
 
@@ -66,15 +65,15 @@ private:
 
     void CompileAndAttachShader(GLuint program, std::string path, GLenum type);
 
-    void UniformMat3(GLint location, const Mat3 & mat);
+    void UniformMat3(GLint location, const glm::dmat3 & mat);
 
-    void UniformMat4(GLint location, const Mat4 & mat);
+    void UniformMat4(GLint location, const glm::dmat4 & mat);
 
     int current_width;
     int current_height;
 
-    ValueHolder<Quat> camera_rotation = ValueHolder<Quat>::Create();
-    ValueHolder<Vec3> camera_translation = ValueHolder<Vec3>::Create();
+    ValueHolder<glm::dquat> camera_rotation = ValueHolder<glm::dquat>::Create();
+    ValueHolder<glm::dvec3> camera_translation = ValueHolder<glm::dvec3>::Create();
 
     const double Z_NEAR = /*Z_NEAR*/;
     const double Z_FAR = /*Z_FAR*/;
@@ -82,3 +81,5 @@ private:
 
 /*MEMBERS*/
 };
+
+} // namespace LiteEngine::VoxelWorld

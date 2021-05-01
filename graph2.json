@@ -4,7 +4,26 @@
     "z_far": 100.0,
     "fov": 90
   },
-  "framebuffers": [],
+  "framebuffers": [
+    {
+      "name": "main",
+      "depth": true,
+      "textures": [
+        {
+          "name": "color",
+          "format": "RGBA"
+        },
+        {
+          "name": "shadow",
+          "format": "RGBA"
+        },
+        {
+          "name": "normal",
+          "format": "RGBA32F"
+        }
+      ]
+    }
+  ],
   "subprograms": [
     {
       "name": "main",
@@ -12,7 +31,9 @@
       "frag_path": "main_frag.glsl",
       "use_depth": true,
       "outputs": [
-        "SCREEN"
+        "main/color",
+        "main/shadow",
+        "main/normal"
       ],
       "fb_inputs": [
       ],
@@ -46,6 +67,10 @@
           "name": "currentObject.transform",
           "type": "mat4"
         },
+        {
+          "name": "currentObject.transformInv",
+          "type": "mat4"
+        },
 
         {
           "name": "globalShadow.dims",
@@ -70,7 +95,45 @@
         {
           "name": "index",
           "type": "int"
+        },
+        {
+          "name": "lightPos",
+          "type": "vec3"
+        },
+        {
+          "name": "seed",
+          "type": "int"
+        },
+        {
+          "name": "blueNoise",
+          "type": "int"
         }
+      ],
+      "execute_before": ["post_processing"]
+    },
+    {
+      "name": "post_processing",
+      "vert_path": "post_vert.glsl",
+      "frag_path": "post_frag.glsl",
+      "use_depth": false,
+      "outputs": [
+        "SCREEN"
+      ],
+      "fb_inputs": [
+        {
+          "name": "color",
+          "value": "main/color"
+        },
+        {
+          "name": "shadow",
+          "value": "main/shadow"
+        },
+        {
+          "name": "normal",
+          "value": "main/normal"
+        }
+      ],
+      "inputs": [
       ],
       "execute_before": []
     }
